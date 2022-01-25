@@ -1,0 +1,27 @@
+Nice Bits to Remember while coding in Java
+
+Logical Operators
+    Logical And             &&
+    Logical Or              ||
+    Logical Not             !
+
+Other Useful Operators
+    Equal To                ==
+    Not Equal To            !=
+    Greater Than            >
+    Less Than               <
+    Greater or Equal To     >=
+    Less or Equal To        <=
+
+Math Operators
+    Add                     +
+    Subtract                -
+    Multiply                *
+    Divide                  /
+    Remainder               %
+    Increment by 1          ++
+    Decrement by 1          --
+
+Sleep Command
+    Thread.sleep(time in milliseconds);
+
