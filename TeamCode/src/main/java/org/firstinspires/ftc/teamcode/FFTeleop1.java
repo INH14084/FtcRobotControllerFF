@@ -78,7 +78,7 @@ public class FFTeleop1 extends OpMode {
     public void loop() {
         //latch();
 
-        /*Display Carousel Direction*/
+        /**Display Carousel Direction*/
         /*
         {
             if (spinDirection == 1) {
@@ -89,24 +89,41 @@ public class FFTeleop1 extends OpMode {
         }
          */
 
-        /*Arm Movement*/{
+        /**Arm Movement*/{
             clawPower = gamepad2.left_stick_y * 0.4;
             liftPower = gamepad2.right_stick_y * 0.4;
         }
 
-        /*Carousel Movement*/{
+        /**Carousel Movement*/{
             spinPower = gamepad2.right_trigger;
         }
 
-        /*Servo Grabber Movement*/{
+        /**Servo Grabber Movement*/{
             if (gamepad2.dpad_up) {
                 robot.clawServo.setPosition(.75);
             } else if (gamepad2.dpad_down) {
                 robot.clawServo.setPosition(0);
             }
         }
+//Todo test code
+        /**Barrier Servo Controls*/ {
+            if((gamepad1.left_stick_y * gamepad1.right_stick_y)>0) {
+                if(-gamepad1.left_stick_y > 0){
+                    robot.rightTorque.setPosition(1);
+                    robot.leftTorque.setPosition(1);
+                } else if (-gamepad1.left_stick_y < 0) {
+                    robot.rightTorque.setPosition(0);
+                    robot.leftTorque.setPosition(0);
+                } else {
+                    robot.rightTorque.setPosition(.5);
+                    robot.leftTorque.setPosition(.5);
+                }
 
-        /*Drive Controls*/ {
+
+            }
+        }
+
+        /**Drive Controls*/ {
             if (gamepad1.left_bumper) {
 
                 //Slow Tank Mode
@@ -150,7 +167,7 @@ public class FFTeleop1 extends OpMode {
             }
         }
 
-        /*Motor Control*/{
+        /**Motor Control*/{
         robot.frontLeftMotor.setPower(frontLeftPower);
         robot.frontRightMotor.setPower(frontRightPower);
         robot.backLeftMotor.setPower(backLeftPower);
@@ -165,7 +182,7 @@ public class FFTeleop1 extends OpMode {
         robot.testMotor.setPower(clawPower);
         }
 
-        /*Telemetry Status*/{
+        /**Telemetry Status*/{
             telemetry.addData("Status", "Driver Controlled");
             telemetry.addData("Action", "Press Stop When Finished");
             telemetry.update();
