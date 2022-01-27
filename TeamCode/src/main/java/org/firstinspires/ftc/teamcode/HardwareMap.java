@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 //import com.qualcomm.robotcore.util.ElapsedTime;
 
 
+@SuppressWarnings("DanglingJavadoc")
 public class HardwareMap {
     //--Create Motors--//
     public DcMotor frontRightMotor = null;      //Control Hub Motor Port #0
@@ -20,6 +21,9 @@ public class HardwareMap {
 
     //--Create Servo--//
     public Servo clawServo         = null;      //Control Hub Servo Port #0
+    public Servo rightTorque       = null;      //Control Hub Servo Port #1
+    public Servo leftTorque        = null;      //Control Hub Servo Port #2
+
 
     //--Additional Variables--//
     com.qualcomm.robotcore.hardware.HardwareMap hardwareMap = null;
@@ -32,7 +36,7 @@ public class HardwareMap {
     public void initialize(com.qualcomm.robotcore.hardware.HardwareMap hwMap) {
         hardwareMap     = hwMap;
 
-        //--Init Motor Info--//
+        /**--Init Motor Info--*/
         frontRightMotor = hardwareMap.get(DcMotor.class  , "FrontRightDrive");
         frontLeftMotor  = hardwareMap.get(DcMotor.class  , "FrontLeftDrive");
         backRightMotor  = hardwareMap.get(DcMotor.class  , "BackRightDrive");
@@ -45,10 +49,12 @@ public class HardwareMap {
 
         testMotor       = hardwareMap.get(DcMotorEx.class, "TestMotor");
 
-        //--Init Servo Info--//
-        clawServo       = hardwareMap.get(Servo.class  , "Claw");
+        /**--Init Servo Info--*/
+        clawServo       = hardwareMap.get(Servo.class , "Claw");
+        rightTorque     = hardwareMap.get(Servo.class , "rightTorque");
+        leftTorque      = hardwareMap.get(Servo.class , "leftTorque");
 
-        //--Set Motor Direction--//
+        /**--Set Motor Direction--*/
         frontRightMotor.setDirection(DcMotor.Direction.FORWARD);
         frontLeftMotor.setDirection(DcMotor.Direction.REVERSE);
         backRightMotor.setDirection(DcMotor.Direction.FORWARD);
@@ -62,7 +68,7 @@ public class HardwareMap {
         testMotor.setDirection(DcMotor.Direction.FORWARD);
 
 
-        //--Set Motor Mode--//
+        /**--Set Motor Mode--*/
         frontRightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         frontLeftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         backRightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -77,7 +83,7 @@ public class HardwareMap {
 
         testMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-        //--Set Zero Power Behavior--//
+        /**--Set Zero Power Behavior--*/
         frontRightMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         frontLeftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         backRightMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -90,7 +96,7 @@ public class HardwareMap {
 
         testMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        //--Set Motor Power to Zero--//
+        /**--Set Motor Power to Zero--*/
         frontRightMotor.setPower(0);
         frontLeftMotor.setPower(0);
         backRightMotor.setPower(0);
