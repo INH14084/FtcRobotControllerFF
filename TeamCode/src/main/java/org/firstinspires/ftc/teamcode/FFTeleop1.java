@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 public class FFTeleop1 extends OpMode {
     HardwareMap robot = new HardwareMap();
 
-    double spinDirection;
+//    double spinDirection;
 
     double frontLeftPower;
     double frontRightPower;
@@ -19,8 +19,8 @@ public class FFTeleop1 extends OpMode {
     double spinPower;
     double liftPower;
 
-    private boolean oldLeftBumper;
-    private boolean oldRightBumper;
+//    private boolean oldLeftBumper;
+//    private boolean oldRightBumper;
 
     @Override
     public void init() {
@@ -74,6 +74,7 @@ public class FFTeleop1 extends OpMode {
 
     }
 
+    @SuppressWarnings("DanglingJavadoc")
     @Override
     public void loop() {
         //latch();
