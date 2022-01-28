@@ -109,11 +109,11 @@ public class FFTeleop1 extends OpMode {
 //Todo test code
         /**Barrier Servo Controls*/ {
             if((gamepad1.left_stick_y * gamepad1.right_stick_y)>0) {
-                if(-gamepad1.left_stick_y > 0){
-                    robot.rightTorque.setPosition(1);
-                    robot.leftTorque.setPosition(1);
-                } else if (-gamepad1.left_stick_y < 0) {
+                if(-gamepad1.left_stick_y > 0.2){
                     robot.rightTorque.setPosition(0);
+                    robot.leftTorque.setPosition(1);
+                } else if (-gamepad1.left_stick_y < -0.2) {
+                    robot.rightTorque.setPosition(1);
                     robot.leftTorque.setPosition(0);
                 } else {
                     robot.rightTorque.setPosition(.5);
