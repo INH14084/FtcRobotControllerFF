@@ -56,7 +56,7 @@ public class test extends LinearOpMode {
         // in the Camera Stream preview window on the Driver Station.
         tfod.activate();
         // Enable following block to zoom in on target.
-        tfod.setZoom(2.5, 16 / 9);
+        tfod.setZoom(1, 16 / 9);
         telemetry.addData("DS preview on/off", "3 dots, Camera Stream");
         telemetry.addData(">", "Press Play to start");
         telemetry.update();
