@@ -110,15 +110,13 @@ public class test extends LinearOpMode {
         // of the detection boundary for the recognition
         telemetry.addData("Right, Bottom " + i, Double.parseDouble(JavaUtil.formatNumber(recognition.getRight(), 0)) + ", " + Double.parseDouble(JavaUtil.formatNumber(recognition.getBottom(), 0)));
         if (recognition.getLabel().equals("Ball")) {
-            if (recognition.getRight() > 400){
+            if (recognition.getRight() < 400) {
                 robot.spin.setPower(1);
-            }
-            if (recognition.getLeft() > 400) {
-                robot.spin.setPower(-1);
+            } else{
+                if (recognition.getRight() > 600) {
 
-        }else{
-              robot.clawServo.setPosition(1);
+                }
             }
-
+        }
     }
 }
