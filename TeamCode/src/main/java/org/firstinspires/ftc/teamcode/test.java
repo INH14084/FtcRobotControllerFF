@@ -2,6 +2,8 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.util.ElapsedTime;
+
 import java.util.List;
 import org.firstinspires.ftc.robotcore.external.JavaUtil;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
@@ -14,6 +16,8 @@ import org.firstinspires.ftc.robotcore.external.tfod.Tfod;
 @Autonomous(name = "asdf (Blocks to Java)")
 public class test extends LinearOpMode {
     HardwareMap robot = new HardwareMap();
+    ElapsedTime runtime = new ElapsedTime();
+    ElapsedTime timer   = new ElapsedTime();
     private VuforiaCurrentGame vuforiaFreightFrenzy;
     private Tfod tfod;
 
@@ -109,14 +113,47 @@ public class test extends LinearOpMode {
         // Display the location of the bottom right corner
         // of the detection boundary for the recognition
         telemetry.addData("Right, Bottom " + i, Double.parseDouble(JavaUtil.formatNumber(recognition.getRight(), 0)) + ", " + Double.parseDouble(JavaUtil.formatNumber(recognition.getBottom(), 0)));
-        if (recognition.getLabel().equals("Ball")) {
-            if (recognition.getRight() < 400) {
-                robot.spin.setPower(1);
-            } else{
-                if (recognition.getRight() > 600) {
+        if (recognition.getLabel().equals("Duck")) {
+            if (recognition.getRight() < 200) {
+                // the top
+                while(timer.milliseconds() < 3000){
+                    robot.frontLeftMotor.setPower(1);
+                    robot.frontRightMotor.setPower(1);
+                    robot.backLeftMotor.setPower(-1);
+                    robot.backRightMotor.setPower(-1);
+                }
 
+                while((timer.milliseconds() > 3000) && (timer.milliseconds() < 6000)){
+                    robot.clawArm.setPower(1);
+                }
+
+            }
+            if (recognition.getRight() > 600) {
+                // the bottom
+                while (timer.milliseconds() < 3000) {
+                    robot.frontLeftMotor.setPower(1);
+                    robot.frontRightMotor.setPower(1);
+                    robot.backLeftMotor.setPower(-1);
+                    robot.backRightMotor.setPower(-1);
+                }
+
+                while ((timer.milliseconds() > 3000) && (timer.milliseconds() < 6000)) {
+                    robot.clawArm.setPower(1);
+                }
+
+            }
+            } else {
+                // the middle
+                while (timer.milliseconds() < 3000) {
+                    robot.frontLeftMotor.setPower(1);
+                    robot.frontRightMotor.setPower(1);
+                    robot.backLeftMotor.setPower(-1);
+                    robot.backRightMotor.setPower(-1);
+                }
+
+                while ((timer.milliseconds() > 3000) && (timer.milliseconds() < 6000)) {
+                    robot.clawArm.setPower(1);
                 }
             }
         }
     }
-}
