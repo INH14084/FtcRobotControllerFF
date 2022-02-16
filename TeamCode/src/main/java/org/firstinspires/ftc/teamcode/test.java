@@ -113,46 +113,46 @@ public class test extends LinearOpMode {
         // Display the location of the bottom right corner
         // of the detection boundary for the recognition
         telemetry.addData("Right, Bottom " + i, Double.parseDouble(JavaUtil.formatNumber(recognition.getRight(), 0)) + ", " + Double.parseDouble(JavaUtil.formatNumber(recognition.getBottom(), 0)));
-        if (recognition.getLabel().equals("Duck")) {
+        if (recognition.getLabel().equals("Duck") || recognition.getLabel().equals("Cube") || recognition.getLabel().equals("Ball"));
+            timer.reset();
             if (recognition.getRight() < 200) {
                 // the top
-                while(timer.milliseconds() < 3000){
-                    robot.frontLeftMotor.setPower(1);
-                    robot.frontRightMotor.setPower(1);
-                    robot.backLeftMotor.setPower(-1);
-                    robot.backRightMotor.setPower(-1);
+                while(timer.milliseconds() < 6000){
+                    robot.frontLeftMotor.setPower(.5);
+                    robot.frontRightMotor.setPower(-.5);
+                    robot.backLeftMotor.setPower(.5);
+                    robot.backRightMotor.setPower(-.5);
                 }
 
-                while((timer.milliseconds() > 3000) && (timer.milliseconds() < 6000)){
-                    robot.clawArm.setPower(1);
+                while((timer.milliseconds() > 6000) && (timer.milliseconds() < 7000)){
+                    robot.clawArm.setPower(-0.5);
                 }
 
             }
             if (recognition.getRight() > 600) {
                 // the bottom
-                while (timer.milliseconds() < 3000) {
-                    robot.frontLeftMotor.setPower(1);
-                    robot.frontRightMotor.setPower(1);
-                    robot.backLeftMotor.setPower(-1);
-                    robot.backRightMotor.setPower(-1);
+                while (timer.milliseconds() < 6000) {
+                    robot.frontLeftMotor.setPower(0.5);
+                    robot.frontRightMotor.setPower(-.5);
+                    robot.backLeftMotor.setPower(.5);
+                    robot.backRightMotor.setPower(-.5);
                 }
 
-                while ((timer.milliseconds() > 3000) && (timer.milliseconds() < 6000)) {
-                    robot.clawArm.setPower(1);
+                while ((timer.milliseconds() > 6000) && (timer.milliseconds() < 7000)) {
+                    robot.clawArm.setPower(-0.5);
                 }
 
-            }
             } else {
                 // the middle
-                while (timer.milliseconds() < 3000) {
-                    robot.frontLeftMotor.setPower(1);
-                    robot.frontRightMotor.setPower(1);
-                    robot.backLeftMotor.setPower(-1);
-                    robot.backRightMotor.setPower(-1);
+                while(timer.milliseconds() < 6000){
+                    robot.frontLeftMotor.setPower(.5);
+                    robot.frontRightMotor.setPower(-.5);
+                    robot.backLeftMotor.setPower(.5);
+                    robot.backRightMotor.setPower(-.5);
                 }
 
-                while ((timer.milliseconds() > 3000) && (timer.milliseconds() < 6000)) {
-                    robot.clawArm.setPower(1);
+                while((timer.milliseconds() > 6000) && (timer.milliseconds() < 7000)){
+                    robot.clawArm.setPower(-0.5);
                 }
             }
         }
