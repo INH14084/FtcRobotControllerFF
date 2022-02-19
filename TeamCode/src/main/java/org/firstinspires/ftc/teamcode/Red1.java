@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.JavaUtil;
@@ -14,7 +15,10 @@ import org.firstinspires.ftc.robotcore.external.navigation.Acceleration;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+import org.firstinspires.ftc.robotcore.external.navigation.Position;
+import org.firstinspires.ftc.robotcore.external.navigation.Velocity;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaCurrentGame;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
@@ -32,6 +36,7 @@ public class Red1 extends LinearOpMode {
     ElapsedTime timer = new ElapsedTime();
     private VuforiaCurrentGame vuforiaFreightFrenzy;
     private Tfod tfod;
+    private DistanceSensor sensorRange;
 
     int hubLevel;
     double startLocation;
@@ -84,7 +89,7 @@ public class Red1 extends LinearOpMode {
         telemetry.addData("Status", "Initializing IMU");
         telemetry.update();
 
-        // Imu Init
+        /** Imu Init */
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
         parameters.angleUnit           = BNO055IMU.AngleUnit.DEGREES;
         parameters.accelUnit           = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
@@ -102,7 +107,7 @@ public class Red1 extends LinearOpMode {
         telemetry.addData("Status", "Beginning Vuforia Init");
         telemetry.update();
 
-        // Initialize Vuforia.
+        /**Initialize Vuforia.*/
         vuforiaFreightFrenzy.initialize(
                 "", // vuforiaLicenseKey
                 hardwareMap.get(WebcamName.class, "Webcam 1"), // cameraName
@@ -127,6 +132,12 @@ public class Red1 extends LinearOpMode {
         tfod.activate();
         // Enable following block to zoom in on target.
         tfod.setZoom(1, 16 / 9);
+
+        telemetry.addData("Vuforia", "Initialized");
+        telemetry.addData("Status", "Distance Sensor Init");
+        telemetry.update();
+
+        sensorRange = hardwareMap.get(DistanceSensor.class, "sensor_range");
 
         telemetry.addData("Status", "Robot Initialized");
         telemetry.addData(">", "Press Play to start");
@@ -159,10 +170,10 @@ public class Red1 extends LinearOpMode {
                 }
                 telemetry.addData("Hub Level", hubLevel);
                 telemetry.update();
-            } //check recognitions
+            } /** check recognitions*/
 
 
-            //Strafe to Position
+            /**Strafe to Position*/
             timer.reset();
 
             while ((opModeIsActive())&&(timer.milliseconds()<1000)) {
@@ -180,7 +191,7 @@ public class Red1 extends LinearOpMode {
 
             sleep(500);
 
-            //Position Claw
+            /**Position Claw*/
 
             robot.clawArm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             robot.clawArm.setTargetPosition(-1000);
@@ -197,15 +208,97 @@ public class Red1 extends LinearOpMode {
             robot.clawServo.setPosition(0);
 
 
-            //Rotate
+            /**Rotate*/
+
+            imu.startAccelerationIntegration(new Position(), new Velocity(), 1000);
 
 
 
-            //Strafe
+            while (opModeIsActive() && (continueLoop)) {
+                if (angles.firstAngle > 185) {
 
-            //Spin Carousel
+                    telemetry.addData("Angle", "Too Big");
+                    robot.frontRightMotor.setPower(.5);
+                    robot.frontLeftMotor.setPower(.5);
+                    robot.backRightMotor.setPower(.5);
+                    robot.backLeftMotor.setPower(.5);
 
-            //Park
+                } else if (angles.firstAngle < 175) {
+
+                    telemetry.addData("Angle", "Too Small");
+                    robot.frontRightMotor.setPower(-.5);
+                    robot.frontLeftMotor.setPower(-.5);
+                    robot.backRightMotor.setPower(-.5);
+                    robot.backLeftMotor.setPower(-.5);
+
+                } else {
+                    continueLoop = false;
+                    robot.frontRightMotor.setPower(0);
+                    robot.frontLeftMotor.setPower(0);
+                    robot.backRightMotor.setPower(0);
+                    robot.backLeftMotor.setPower(0);
+                }
+            }
+
+            robot.frontRightMotor.setPower(0);
+            robot.frontLeftMotor.setPower(0);
+            robot.backRightMotor.setPower(0);
+            robot.backLeftMotor.setPower(0);
+            continueLoop = true;
+
+            /**Strafe*/
+            timer.reset();
+            while ((opModeIsActive()) && (timer.milliseconds()<5000)) {
+                robot.frontRightMotor.setPower(strafePower);
+                robot.frontLeftMotor.setPower(-strafePower);
+                robot.backRightMotor.setPower(-strafePower);
+                robot.backLeftMotor.setPower(strafePower);
+            }
+
+            robot.frontRightMotor.setPower(0);
+            robot.frontLeftMotor.setPower(0);
+            robot.backRightMotor.setPower(0);
+            robot.backLeftMotor.setPower(0);
+            sleep(500);
+
+            /**Spin Carousel*/
+            robot.spin.setPower(-1);
+
+            sleep(2000);
+
+            robot.spin.setPower(0);
+
+            /**Park*/
+            while(opModeIsActive() && continueLoop) {
+                if (sensorRange.getDistance(DistanceUnit.METER) < .8) {
+                    telemetry.addData("Distance", "Too Close");
+                    robot.frontRightMotor.setPower(0);
+                    robot.frontLeftMotor.setPower(0);
+                    robot.backRightMotor.setPower(0);
+                    robot.backLeftMotor.setPower(0);
+                } else if (sensorRange.getDistance(DistanceUnit.METER) > 1) {
+                    telemetry.addData("Distance", "Too Far");
+                    robot.frontRightMotor.setPower(0);
+                    robot.frontLeftMotor.setPower(0);
+                    robot.backRightMotor.setPower(0);
+                    robot.backLeftMotor.setPower(0);
+                } else {
+                    continueLoop = false;
+                    telemetry.addData("Distance", "Correct");
+                    robot.frontRightMotor.setPower(0);
+                    robot.frontLeftMotor.setPower(0);
+                    robot.backRightMotor.setPower(0);
+                    robot.backLeftMotor.setPower(0);
+                }
+                telemetry.update();
+            }
+            robot.frontRightMotor.setPower(0);
+            robot.frontLeftMotor.setPower(0);
+            robot.backRightMotor.setPower(0);
+            robot.backLeftMotor.setPower(0);
+
+            continueLoop = true;
+
 
         }
 
