@@ -27,10 +27,10 @@ import org.firstinspires.ftc.robotcore.external.tfod.Tfod;
 import java.util.List;
 import java.util.Locale;
 
-@Autonomous(name= "Red1")
+@Autonomous(name= "Blue1")
 @Disabled
 
-public class Red1 extends LinearOpMode {
+public class Blue1 extends LinearOpMode {
     HardwareMap robot = new HardwareMap();
     ElapsedTime runtime = new ElapsedTime();
     ElapsedTime timer = new ElapsedTime();
@@ -41,7 +41,7 @@ public class Red1 extends LinearOpMode {
     int hubLevel;
     double startLocation;
 
-    double strafePower = 1;
+    double strafePower = -1;
 
     boolean continueLoop = true;
 
@@ -66,10 +66,10 @@ public class Red1 extends LinearOpMode {
         sleep(5000);
 
         if(gamepad1.a) {
-            startLocation = 1;
+            startLocation = -1;
             telemetry.addData("Location Set","Top");
         } else {
-            startLocation = -1;
+            startLocation = 1;
             telemetry.addData("Location Set","Bottom");
         }
         telemetry.update();
@@ -254,13 +254,93 @@ public class Red1 extends LinearOpMode {
             robot.clawArm.setPower(0);
 
             sleep(1000);
-
-
             /**Rotate*/
 
             imu.startAccelerationIntegration(new Position(), new Velocity(), 1000);
 
 
+
+            while (opModeIsActive() && (continueLoop)) {
+                if (angles.firstAngle > 95) {
+
+                    telemetry.addData("Angle", "Too Big");
+                    robot.frontRightMotor.setPower(.5);
+                    robot.frontLeftMotor.setPower(.5);
+                    robot.backRightMotor.setPower(.5);
+                    robot.backLeftMotor.setPower(.5);
+
+                } else if (angles.firstAngle < 85) {
+
+                    telemetry.addData("Angle", "Too Small");
+                    robot.frontRightMotor.setPower(-.5);
+                    robot.frontLeftMotor.setPower(-.5);
+                    robot.backRightMotor.setPower(-.5);
+                    robot.backLeftMotor.setPower(-.5);
+
+                } else {
+                    continueLoop = false;
+                    robot.frontRightMotor.setPower(0);
+                    robot.frontLeftMotor.setPower(0);
+                    robot.backRightMotor.setPower(0);
+                    robot.backLeftMotor.setPower(0);
+                }
+            }
+
+            robot.frontRightMotor.setPower(0);
+            robot.frontLeftMotor.setPower(0);
+            robot.backRightMotor.setPower(0);
+            robot.backLeftMotor.setPower(0);
+            continueLoop = true;
+
+            sleep(500);
+
+            /**Drive to Carousel*/
+            while ((opModeIsActive()) && (continueLoop)) {
+                if (sensorRange.getDistance(DistanceUnit.METER) < .1) {
+                    telemetry.addData("Distance", "Too Close");
+                    robot.frontRightMotor.setPower(-.25);
+                    robot.frontLeftMotor.setPower(-.25);
+                    robot.backRightMotor.setPower(-.25);
+                    robot.backLeftMotor.setPower(-.25);
+                } else if ((sensorRange.getDistance(DistanceUnit.METER) > .3) && (sensorRange.getDistance(DistanceUnit.METER) < 1)) {
+                    telemetry.addData("Distance", "Too Far");
+                    robot.frontRightMotor.setPower(.5);
+                    robot.frontLeftMotor.setPower(.5);
+                    robot.backRightMotor.setPower(.5);
+                    robot.backLeftMotor.setPower(.5);
+                }else if(sensorRange.getDistance(DistanceUnit.METER) > 1){
+                    telemetry.addData("Distance", "Too Far");
+                    robot.frontRightMotor.setPower(1);
+                    robot.frontLeftMotor.setPower(1);
+                    robot.backRightMotor.setPower(1);
+                    robot.backLeftMotor.setPower(1);
+                }else {
+                    continueLoop = false;
+                    telemetry.addData("Distance", "Correct");
+                    robot.frontRightMotor.setPower(0);
+                    robot.frontLeftMotor.setPower(0);
+                    robot.backRightMotor.setPower(0);
+                    robot.backLeftMotor.setPower(0);
+                }
+                telemetry.update();
+            }
+
+            robot.frontRightMotor.setPower(0);
+            robot.frontLeftMotor.setPower(0);
+            robot.backRightMotor.setPower(0);
+            robot.backLeftMotor.setPower(0);
+            sleep(500);
+
+            /**Spin Carousel*/
+            robot.spin.setPower(-1);
+
+            sleep(2000);
+
+            robot.spin.setPower(0);
+
+            sleep(500);
+
+            /**Rotate*/
 
             while (opModeIsActive() && (continueLoop)) {
                 if (angles.firstAngle > 185) {
@@ -293,43 +373,22 @@ public class Red1 extends LinearOpMode {
             robot.backRightMotor.setPower(0);
             robot.backLeftMotor.setPower(0);
             continueLoop = true;
-
-            /**Strafe*/
-            timer.reset();
-            while ((opModeIsActive()) && (timer.milliseconds()<5000)) {
-                robot.frontRightMotor.setPower(strafePower);
-                robot.frontLeftMotor.setPower(-strafePower);
-                robot.backRightMotor.setPower(-strafePower);
-                robot.backLeftMotor.setPower(strafePower);
-            }
-
-            robot.frontRightMotor.setPower(0);
-            robot.frontLeftMotor.setPower(0);
-            robot.backRightMotor.setPower(0);
-            robot.backLeftMotor.setPower(0);
             sleep(500);
-
-            /**Spin Carousel*/
-            robot.spin.setPower(-1);
-
-            sleep(2000);
-
-            robot.spin.setPower(0);
 
             /**Park*/
             while(opModeIsActive() && continueLoop) {
                 if (sensorRange.getDistance(DistanceUnit.METER) < .8) {
                     telemetry.addData("Distance", "Too Close");
-                    robot.frontRightMotor.setPower(-.25);
-                    robot.frontLeftMotor.setPower(-.25);
-                    robot.backRightMotor.setPower(-.25);
-                    robot.backLeftMotor.setPower(-.25);
+                    robot.frontRightMotor.setPower(0);
+                    robot.frontLeftMotor.setPower(0);
+                    robot.backRightMotor.setPower(0);
+                    robot.backLeftMotor.setPower(0);
                 } else if (sensorRange.getDistance(DistanceUnit.METER) > 1) {
                     telemetry.addData("Distance", "Too Far");
-                    robot.frontRightMotor.setPower(.25);
-                    robot.frontLeftMotor.setPower(.25);
-                    robot.backRightMotor.setPower(.25);
-                    robot.backLeftMotor.setPower(.25);
+                    robot.frontRightMotor.setPower(0);
+                    robot.frontLeftMotor.setPower(0);
+                    robot.backRightMotor.setPower(0);
+                    robot.backLeftMotor.setPower(0);
                 } else {
                     continueLoop = false;
                     telemetry.addData("Distance", "Correct");
@@ -362,6 +421,8 @@ public class Red1 extends LinearOpMode {
             robot.frontLeftMotor.setPower(0);
             robot.backRightMotor.setPower(0);
             robot.backLeftMotor.setPower(0);
+
+
 
 
         }
