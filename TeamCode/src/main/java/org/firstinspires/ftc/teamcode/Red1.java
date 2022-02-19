@@ -1,19 +1,27 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.hardware.bosch.BNO055IMU;
+import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.JavaUtil;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.robotcore.external.navigation.Acceleration;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaCurrentGame;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.robotcore.external.tfod.Tfod;
 
 import java.util.List;
+import java.util.Locale;
 
 @Autonomous(name= "Red1")
 @Disabled
@@ -25,6 +33,19 @@ public class Red1 extends LinearOpMode {
     private VuforiaCurrentGame vuforiaFreightFrenzy;
     private Tfod tfod;
 
+    int hubLevel;
+    double startLocation;
+
+    double strafePower = 1;
+
+    boolean continueLoop = true;
+
+
+    BNO055IMU imu;
+
+    Orientation angles;
+    Acceleration gravity;
+
 
     Recognition recognition;
 
@@ -33,13 +54,54 @@ public class Red1 extends LinearOpMode {
      */
     @Override
     public void runOpMode() {
+        telemetry.addData("Action","Set Robot Location");
+        telemetry.addData("Hold A for Top", "Hold B for Bottom");
+        telemetry.update();
+
+        sleep(5000);
+
+        if(gamepad1.a) {
+            startLocation = 1;
+            telemetry.addData("Location Set","Top");
+        } else {
+            startLocation = -1;
+            telemetry.addData("Location Set","Bottom");
+        }
+        telemetry.update();
+
+
+        robot.clawServo.setPosition(.75);
+        sleep(1000);
+
+
+
         List<Recognition> recognitions;
         int index;
         robot.initialize(hardwareMap);
         vuforiaFreightFrenzy = new VuforiaCurrentGame();
         tfod = new Tfod();
 
-        // Sample TFOD Op Mode
+        telemetry.addData("Status", "Initializing IMU");
+        telemetry.update();
+
+        // Imu Init
+        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
+        parameters.angleUnit           = BNO055IMU.AngleUnit.DEGREES;
+        parameters.accelUnit           = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
+        parameters.calibrationDataFile = "BNO055IMUCalibration.json"; // see the calibration sample OPMode
+        parameters.loggingEnabled      = true;
+        parameters.loggingTag          = "IMU";
+        parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
+
+        imu = hardwareMap.get(BNO055IMU.class, "IMU");
+        imu.initialize(parameters);
+
+        composeTelemetry();
+
+        telemetry.addData("IMU", "Initialized");
+        telemetry.addData("Status", "Beginning Vuforia Init");
+        telemetry.update();
+
         // Initialize Vuforia.
         vuforiaFreightFrenzy.initialize(
                 "", // vuforiaLicenseKey
@@ -65,7 +127,8 @@ public class Red1 extends LinearOpMode {
         tfod.activate();
         // Enable following block to zoom in on target.
         tfod.setZoom(1, 16 / 9);
-        telemetry.addData("DS preview on/off", "3 dots, Camera Stream");
+
+        telemetry.addData("Status", "Robot Initialized");
         telemetry.addData(">", "Press Play to start");
         telemetry.update();
         // Wait for start command from Driver Station.
@@ -94,11 +157,60 @@ public class Red1 extends LinearOpMode {
                         index = index + 1;
                     }
                 }
+                telemetry.addData("Hub Level", hubLevel);
                 telemetry.update();
             } //check recognitions
 
 
+            //Strafe to Position
+            timer.reset();
+
+            while ((opModeIsActive())&&(timer.milliseconds()<1000)) {
+                robot.frontRightMotor.setPower(strafePower * startLocation);
+                robot.frontLeftMotor.setPower(-strafePower * startLocation);
+                robot.backRightMotor.setPower(-strafePower * startLocation);
+                robot.backLeftMotor.setPower(strafePower * startLocation);
+
+            }
+
+            robot.frontRightMotor.setPower(0);
+            robot.frontLeftMotor.setPower(0);
+            robot.backRightMotor.setPower(0);
+            robot.backLeftMotor.setPower(0);
+
+            sleep(500);
+
+            //Position Claw
+
+            robot.clawArm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            robot.clawArm.setTargetPosition(-1000);
+            robot.clawArm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+            sleep(250);
+
+            robot.clawArm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            robot.clawArm.setTargetPosition(hubLevel);
+            robot.clawArm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+            sleep(1000);
+
+            robot.clawServo.setPosition(0);
+
+
+            //Rotate
+
+
+
+            //Strafe
+
+            //Spin Carousel
+
+            //Park
+
         }
+
+
+
         // Deactivate TFOD.
         tfod.deactivate();
 
@@ -125,14 +237,51 @@ public class Red1 extends LinearOpMode {
         timer.reset();
         if (recognition.getRight() < 200) {
             //top level
-
+            hubLevel = 500;
         } else if (recognition.getRight() > 600) {
             //bottom level
-
+            hubLevel = 200;
         } else {
             //middle level
-
+            hubLevel = 350;
         }
+    }
+
+    void composeTelemetry() {
+
+        // At the beginning of each telemetry update, grab a bunch of data
+        // from the IMU that we will then display in separate lines.
+        telemetry.addAction(() -> {
+            // Acquiring the angles is relatively expensive; we don't want
+            // to do that in each of the three items that need that info, as that's
+            // three times the necessary expense.
+            angles   = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+            gravity  = imu.getGravity();
+        });
+
+        telemetry.addLine()
+                .addData("status", () -> imu.getSystemStatus().toShortString())
+                .addData("calibrated", () -> imu.getCalibrationStatus().toString());
+
+        telemetry.addLine()
+                .addData("heading", () -> formatAngle(angles.angleUnit, angles.firstAngle))
+                .addData("roll", () -> formatAngle(angles.angleUnit, angles.secondAngle))
+                .addData("pitch", () -> formatAngle(angles.angleUnit, angles.thirdAngle));
+
+        telemetry.addLine()
+                .addData("gravity", () -> gravity.toString())
+                .addData("mag", () -> String.format(Locale.getDefault(), "%.3f",
+                        Math.sqrt(gravity.xAccel*gravity.xAccel
+                                + gravity.yAccel*gravity.yAccel
+                                + gravity.zAccel*gravity.zAccel)));
+    }
+
+    String formatAngle(AngleUnit angleUnit, double angle) {
+        return formatDegrees(AngleUnit.DEGREES.fromUnit(angleUnit, angle));
+    }
+
+    String formatDegrees(double degrees){
+        return String.format(Locale.getDefault(), "%.1f", AngleUnit.DEGREES.normalize(degrees));
     }
 }
 
