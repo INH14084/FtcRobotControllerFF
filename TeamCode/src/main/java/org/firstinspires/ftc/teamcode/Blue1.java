@@ -27,6 +27,7 @@ import org.firstinspires.ftc.robotcore.external.tfod.Tfod;
 import java.util.List;
 import java.util.Locale;
 
+@SuppressWarnings({"DanglingJavadoc", "IntegerDivisionInFloatingPointContext", "FieldCanBeLocal"})
 @Autonomous(name= "Blue1")
 @Disabled
 

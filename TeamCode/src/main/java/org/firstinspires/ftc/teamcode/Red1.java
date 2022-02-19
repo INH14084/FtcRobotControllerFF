@@ -27,6 +27,7 @@ import org.firstinspires.ftc.robotcore.external.tfod.Tfod;
 import java.util.List;
 import java.util.Locale;
 
+@SuppressWarnings({"FieldCanBeLocal", "IntegerDivisionInFloatingPointContext"})
 @Autonomous(name= "Red1")
 @Disabled
 
@@ -58,6 +59,7 @@ public class Red1 extends LinearOpMode {
     /**
      * This function is executed when this Op Mode is selected from the Driver Station.
      */
+    @SuppressWarnings("DanglingJavadoc")
     @Override
     public void runOpMode() {
         telemetry.addData("Action","Set Robot Location");
