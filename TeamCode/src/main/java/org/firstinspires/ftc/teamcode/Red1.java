@@ -40,6 +40,7 @@ public class Red1 extends LinearOpMode {
 
     int hubLevel;
     double startLocation;
+    int extraTime;
 
     double strafePower = 1;
 
@@ -218,7 +219,7 @@ public class Red1 extends LinearOpMode {
             robot.backRightMotor.setPower(.25);
             robot.backLeftMotor.setPower(.25);
 
-            sleep(750);
+            sleep(750 + extraTime);
 
             robot.frontRightMotor.setPower(0);
             robot.frontLeftMotor.setPower(0);
@@ -237,7 +238,7 @@ public class Red1 extends LinearOpMode {
             robot.backRightMotor.setPower(-.25);
             robot.backLeftMotor.setPower(-.25);
 
-            sleep(750);
+            sleep(750 + extraTime);
 
             robot.frontRightMotor.setPower(0);
             robot.frontLeftMotor.setPower(0);
@@ -351,10 +352,10 @@ public class Red1 extends LinearOpMode {
             timer.reset();
 
             while ((opModeIsActive())&&(timer.milliseconds()<1000)) {
-                robot.frontRightMotor.setPower(strafePower * startLocation);
-                robot.frontLeftMotor.setPower(-strafePower * startLocation);
-                robot.backRightMotor.setPower(-strafePower * startLocation);
-                robot.backLeftMotor.setPower(strafePower * startLocation);
+                robot.frontRightMotor.setPower(strafePower);
+                robot.frontLeftMotor.setPower(-strafePower);
+                robot.backRightMotor.setPower(-strafePower);
+                robot.backLeftMotor.setPower(strafePower);
 
             }
 
@@ -390,17 +391,22 @@ public class Red1 extends LinearOpMode {
         // Display the location of the bottom right corner
         // of the detection boundary for the recognition
         telemetry.addData("Right, Bottom " + i, Double.parseDouble(JavaUtil.formatNumber(recognition.getRight(), 0)) + ", " + Double.parseDouble(JavaUtil.formatNumber(recognition.getBottom(), 0)));
-        if (recognition.getLabel().equals("Duck") || recognition.getLabel().equals("Cube") || recognition.getLabel().equals("Ball"));
-        timer.reset();
-        if (recognition.getRight() < 200) {
-            //top level
-            hubLevel = 500;
-        } else if (recognition.getRight() > 600) {
-            //bottom level
-            hubLevel = 200;
-        } else {
-            //middle level
-            hubLevel = 350;
+
+        if (recognition.getLabel().equals("Duck") || recognition.getLabel().equals("Cube") || recognition.getLabel().equals("Ball")) {
+            timer.reset();
+            if (recognition.getRight() < 200) {
+                //top level
+                hubLevel = 500;
+                extraTime = 0;
+            } else if (recognition.getRight() > 600) {
+                //bottom level
+                hubLevel = 200;
+                extraTime = 0;
+            } else {
+                //middle level
+                hubLevel = 350;
+                extraTime = 0;
+            }
         }
     }
 
