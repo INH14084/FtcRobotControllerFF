@@ -3,9 +3,9 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-@TeleOp(name="FF_TeleOp_1", group="robot")
+@TeleOp(name="Teleop_ButItscontroller2", group="robot")
 
-public class FFTeleop1 extends OpMode {
+public class Teleop_ButItscontroller2 extends OpMode {
     HardwareMap robot = new HardwareMap();
 
 //    double spinDirection;
@@ -29,7 +29,7 @@ public class FFTeleop1 extends OpMode {
         telemetry.addData("Status", "Initializing");
         telemetry.update();
 
-        robot.clawServo.setPosition(1);
+        robot.clawServo.setPosition(.75);
 
     }
 
@@ -128,7 +128,7 @@ public class FFTeleop1 extends OpMode {
         }
 
         /**Drive Controls*/ {
-            if (gamepad1.left_bumper) {
+            if (gamepad1.y) {
 
                 //Slow Tank Mode
                 if (gamepad1.right_bumper) {
@@ -172,18 +172,18 @@ public class FFTeleop1 extends OpMode {
         }
 
         /**Motor Control*/{
-        robot.frontLeftMotor.setPower(frontLeftPower);
-        robot.frontRightMotor.setPower(frontRightPower);
-        robot.backLeftMotor.setPower(backLeftPower);
-        robot.backRightMotor.setPower(backRightPower);
+            robot.frontLeftMotor.setPower(frontLeftPower);
+            robot.frontRightMotor.setPower(frontRightPower);
+            robot.backLeftMotor.setPower(backLeftPower);
+            robot.backRightMotor.setPower(backRightPower);
 
-        robot.clawArm.setPower(clawPower);
-        robot.slidePull.setPower(liftPower);
+            robot.clawArm.setPower(clawPower);
+            robot.slidePull.setPower(liftPower);
 
-        //robot.spin.setPower(spinPower * spinDirection);
-        robot.spin.setPower(gamepad2.right_trigger - gamepad2.left_trigger);
+            //robot.spin.setPower(spinPower * spinDirection);
+            robot.spin.setPower(gamepad2.right_trigger - gamepad2.left_trigger);
 
-        robot.testMotor.setPower(clawPower);
+            robot.testMotor.setPower(clawPower);
         }
 
         /**Telemetry Status*/{
